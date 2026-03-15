@@ -111,29 +111,36 @@ class GameEngine:
         """
         Valida la palabra hablada contra el hechizo actual.
         
-        Si la palabra coincide (ignorando mayúsculas y acentos):
+        Busca el hechizo dentro de la frase hablada (ignora palabras adicionales).
+        Si coincide (ignorando mayúsculas y acentos):
         - Resta 10 HP al enemigo
         - Resetea la posición del proyectil a 50
         - Genera un nuevo hechizo
         - Aumenta la velocidad del juego en 0.2
         
         Args:
-            spoken_word: Palabra capturada del micrófono
+            spoken_word: Frase capturada del micrófono (puede tener múltiples palabras)
             
         Returns:
-            True si la palabra coincidió, False en caso contrario
+            True si el hechizo fue encontrado en la frase, False en caso contrario
         """
-        # Normalizar ambas palabras para comparación
-        spoken_normalized = normalize_text(spoken_word)
+        # Normalizar el hechizo actual
         current_spell_normalized = normalize_text(self.current_spell)
         
-        if spoken_normalized == current_spell_normalized:
-            # Acierto: daña al enemigo
-            self.enemy_hp -= 10
-            self.projectile_position = 50
-            self.current_spell = self._generate_new_spell()
-            self.game_speed += 0.2
-            return True
+        # Dividir la entrada en palabras individuales
+        spoken_words = spoken_word.split()
+        
+        # Buscar el hechizo en cada palabra hablada
+        for word in spoken_words:
+            word_normalized = normalize_text(word)
+            
+            if word_normalized == current_spell_normalized:
+                # ¡ACIERTO! El hechizo fue encontrado
+                self.enemy_hp -= 10
+                self.projectile_position = 50
+                self.current_spell = self._generate_new_spell()
+                self.game_speed += 0.2
+                return True
         
         return False
     
